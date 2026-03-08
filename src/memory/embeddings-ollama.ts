@@ -118,7 +118,8 @@ export async function createOllamaEmbeddingProvider(
     model: client.model,
     embedQuery: embedOne,
     embedBatch: async (texts: string[]) => {
-      // Ollama /api/embed accepts one input per request.
+      // Ollama /api/embed supports batched input, but we fan-out here to
+      // keep error handling and response normalisation consistent per text.
       return await Promise.all(texts.map(embedOne));
     },
   };
