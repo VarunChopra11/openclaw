@@ -372,8 +372,14 @@ export const ToolPolicyWithProfileSchema = z
   });
 
 // Provider docking: allowlists keyed by provider id (no schema updates when adding providers).
+// Flat array sugar: ["userId"] is coerced to { "*": ["userId"] } so both formats are accepted.
 export const ElevatedAllowFromSchema = z
-  .record(z.string(), z.array(z.union([z.string(), z.number()])))
+  .union([
+    z.record(z.string(), z.array(z.union([z.string(), z.number()]))),
+    z
+      .array(z.union([z.string(), z.number()]))
+      .transform((arr) => ({ "*": arr }) as Record<string, Array<string | number>>),
+  ])
   .optional();
 
 const ToolExecApplyPatchSchema = z
